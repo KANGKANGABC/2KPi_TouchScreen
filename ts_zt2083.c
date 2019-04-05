@@ -370,6 +370,7 @@ static struct i2c_driver zt2083_driver={
         .remove = zt2083_remove,
 		.id_table = zt2083_id,
 };
+/*
 static int __init zt2083_init(void)
 {
 	printk("\t\n*****zt2083_init*****\n");
@@ -393,6 +394,9 @@ static int __exit zt2083_exit(void)
 
 late_initcall(zt2083_init);
 module_exit(zt2083_exit);
+*/
+
+module_i2c_driver(zt2083_driver);
 
 MODULE_AUTHOR("ZHAOKAI <zhaokai@loongson.cn>");
 MODULE_DESCRIPTION("LS1B zt2083 touchscreen driver");
