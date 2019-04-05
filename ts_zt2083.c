@@ -17,10 +17,10 @@
 #include <linux/workqueue.h>
 #include <linux/poll.h>
 #include <linux/gpio.h>
-#include <ls1x_gpio.h>
+//#include <ls1x_gpio.h>
 
 #define ZT2083_DEV_NAME  "zt2083"
-#define ZT2083_IRQ_PIN      GPIO_32
+//#define ZT2083_IRQ_PIN      GPIO_32
 
 #define ZT2083_INIT             0xc8
 #define ZT2083_INIT2             0xcc
@@ -37,7 +37,7 @@
 #define ZT2083_12BIT 			1  
 #define MAX_12BIT               2047
 
-extern gpio_bank_ls1c[3];
+//extern gpio_bank_ls1c[3];
 
 struct ts_event {
 	unsigned int	x;
@@ -240,7 +240,7 @@ static struct miscdevice key_dev = {
 	.fops   = &key_fops,
 };
 
-static int __devinit zt2083_probe(struct i2c_client *client,
+static int zt2083_probe(struct i2c_client *client,
                    const struct i2c_device_id *id)
 {
     int err, ret;
@@ -308,13 +308,16 @@ static int __devinit zt2083_probe(struct i2c_client *client,
     }
 
     INIT_DELAYED_WORK(&ts->work,ts_work_handler);
+	/*
 	if(gpio_request(ZT2083_IRQ_PIN,"gpio")){
 		printk("zt2083 intterrupt gpio request failed!\r\n");
 		goto exit_kfree;
 	}
+	*/
 
-	gpio_direction_input(ZT2083_IRQ_PIN);  
-	ts->irq = gpio_to_irq(ZT2083_IRQ_PIN);
+	//gpio_direction_input(ZT2083_IRQ_PIN);  
+	//ts->irq = gpio_to_irq(ZT2083_IRQ_PIN);
+	ts->irq = client->irq;
 	
 	ret = request_irq(ts->irq,ts_interrupt,IRQF_TRIGGER_FALLING ,ZT2083_DEV_NAME,ts);
     printk(ZT2083_DEV_NAME"\tinitialized\n");
@@ -327,7 +330,7 @@ static int __devinit zt2083_probe(struct i2c_client *client,
 	    return err;
 }
 
-static int __devexit zt2083_remove(struct i2c_client *client)
+static int zt2083_remove(struct i2c_client *client)
 {
 	int err;
 	struct zt2083_data *ts = i2c_get_clientdata(client);
@@ -364,7 +367,7 @@ static struct i2c_driver zt2083_driver={
             .owner = THIS_MODULE,
         },
         .probe = zt2083_probe,
-        .remove = __devexit_p(zt2083_remove),
+        .remove = zt2083_remove,
 		.id_table = zt2083_id,
 };
 static int __init zt2083_init(void)
